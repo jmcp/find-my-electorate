@@ -3,8 +3,8 @@ About this service
 
 Firstly, let's get the license question out of the way:
 
-    All code in this repo is available for you to use under the terms
-    of the MIT license. Please review [LICENSE][LICENSE] for details.
+    All code in this repo is available for you to use under	the
+	terms of the MIT license. Please review LICENSE for details.
 
 
 Right. With that done, what is this service for and how do I set it up and run
@@ -17,12 +17,12 @@ assembly are covered - no Senate or Legislative Councils.
 
 If you want to run this service yourself, you will need to provide a
 configuration file `fmeconfig-prod.cfg` which contains the variable
-`GMAPKEY` - your [gmapkey][Google Maps API key]. Protect this file with
+`GMAPKEY` - your [Google Maps API key][gmapkey]. Protect this file with
 appropriate locked down permissions, because that API service is a paid-for
 thing.
 
 Once you have that created, deploy it using your favourite method such as
-those documented here under [deployment options][Deployment Options].
+those documented here under [Deployment Options][deployment options].
 
 
 Data Files
@@ -39,9 +39,9 @@ Useful urls
 -----------
 
 To determine whether a given address is within an electorate, I've used the
-example code for the [evenoddrule][Even-Odd Rule].
+example code for the [Even-Odd Rule][evenoddrule].
 
-The [gmapdocs][Google Maps API Developer Guide] is very useful too.
+The [Google Maps API Developer Guide][gmapdocs] is very useful too.
 
 
 
