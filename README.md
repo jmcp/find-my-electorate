@@ -13,5 +13,5 @@ terms of the MIT license. Please review [LICENSE][LICENSE] for details.
 ----
 
   [LICENSE]: LICENSE.md
-  [grabbag]: ../grabbag
+  [grabbag]: https://github.com/jmcp/grabbag
 
