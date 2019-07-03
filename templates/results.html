@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="results">
+    The address <b>{{ address }}</b>
+    <br><br>
+    is in the Federal division of
+    <a href="{{ aecurl }}" alt="{{ feddiv }}">{{ feddiv }}</a>
+    <br>
+    <br>
+
+    {% if not isSupported %}
+    We do not have map support for electorates in {{ StateOrTerritory }}
+    at this point, so only Federal division information is available.
+    {% else %}
+    is in the {{ StateOrTerritoryName }} electorate of {{ statediv }}
+    {% endif -%}
+</div>
+
+{% endblock %}

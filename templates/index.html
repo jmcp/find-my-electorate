@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<form method="POST" action="/results">
+    <div>{{ form.address.label }}: {{ form.address() }}</div>
+    <b>Please note that your address is NOT stored by this service.</b>
+</form>
+
+{% endblock %}
