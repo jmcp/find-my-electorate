@@ -1,3 +1,6 @@
 *.py?
 .git/*
 XDG_CACHE_HOME/*
+fmeconfig-*
+^#.*
+^\.#.*
