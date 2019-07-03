@@ -5,7 +5,9 @@
     The address <b>{{ address }}</b>
     <br><br>
     is in the Federal division of
-    <a href="{{ aecurl }}" alt="{{ feddiv }}">{{ feddiv }}</a>
+    <a href="{{ aecurl }}"
+       alt="Australian Electoral Commission page for {{ feddiv }}">
+	{{ feddiv }}</a>
     <br>
     <br>
 
@@ -13,7 +15,9 @@
     We do not have map support for electorates in {{ StateOrTerritory }}
     at this point, so only Federal division information is available.
     {% else %}
-    is in the {{ StateOrTerritoryName }} electorate of {{ statediv }}
+    is in the {{ StateOrTerritoryName }} electorate of
+    <a href="{{ sturl }}" alt="Wikipedia page for {{ statediv }}">
+	{{ statediv }}</a>
     {% endif -%}
 </div>
 

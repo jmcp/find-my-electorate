@@ -38,8 +38,8 @@ reside in my [grabbag][grabbag] repo.
 Useful urls
 -----------
 
-To determine whether a given point (latitude, longitude) is within an area,
-I've used the example code for the [evenoddrule][Even-Odd Rule].
+To determine whether a given address is within an electorate, I've used the
+example code for the [evenoddrule][Even-Odd Rule].
 
 The [gmapdocs][Google Maps API Developer Guide] is very useful too.
 

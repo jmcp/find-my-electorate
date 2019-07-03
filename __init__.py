@@ -57,7 +57,7 @@ queryurl = "https://maps.googleapis.com/maps/api/geocode/json?address="
 queryurl += "{addr} Australia&key={gmapkey}"
 
 aecurl = "https://www.aec.gov.au/profiles/{0}/{1}.htm"
-
+stateurl = "https://en.wikipedia.org/wiki/Electoral_district_of_{0}"
 
 # We don't have support for all the jurisdictions in the country
 # *yet*, so keep a whitelist of those we know about so we can
@@ -71,6 +71,16 @@ stmap = {"ACT": "Australian Capital Territory",
          "TAS": "Tasmania",
          "VIC": "Victoria",
          "WA": "Western Australia"
+         }
+
+sturls = {"ACT": "https://en.wikipedia.org/wiki/{0}_electorate",
+         "NT": "https://en.wikipedia.org/wiki/Electoral_division_of_{0}",
+         "NSW": stateurl,
+         "QLD": stateurl,
+         "SA": stateurl,
+         "TAS": "https://en.wikipedia.org/wiki/Division_of_{0}_(state)",
+         "VIC": stateurl,
+         "WA": stateurl
          }
 
 electoratejson = {}
@@ -194,7 +204,10 @@ def results():
                            StateOrTerritoryName=stmap[dictr["state"]],
                            isSupported=isSupported,
                            aecurl=aecurl.format(dictr["state"].lower(),
-                                                feddiv.lower()))
+                                                feddiv.lower()),
+                           sturl=sturls[dictr["state"]].format(
+                               statediv.replace(" ", "_"))
+    )
 
 
 @app.route("/")
