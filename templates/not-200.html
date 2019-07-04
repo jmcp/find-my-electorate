@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="results">
+    The service was unable to translate (geocode) the address <b>{{ address }}</b>
+    <br><br>
+    into a latitude/longitude. The query result is
+    <br><br>
+    <hr>
+    {{ result }}
+    <br>
+    <hr>
+
+</div>
+
+{% endblock %}

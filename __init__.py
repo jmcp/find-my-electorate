@@ -63,31 +63,33 @@ stateurl = "https://en.wikipedia.org/wiki/Electoral_district_of_{0}"
 # *yet*, so keep a whitelist of those we know about so we can
 # handle out-of-bounds cases politely.
 supported = {"FEDERAL", "QLD", "NSW", "VIC", "TAS"}
-stmap = {"ACT": "Australian Capital Territory",
-         "NT": "Northern Territory",
-         "NSW": "New South Wales",
-         "QLD": "Queensland",
-         "SA": "South Australia",
-         "TAS": "Tasmania",
-         "VIC": "Victoria",
-         "WA": "Western Australia"
-         }
+stmap = {
+    "ACT": "Australian Capital Territory",
+    "NT": "Northern Territory",
+    "NSW": "New South Wales",
+    "QLD": "Queensland",
+    "SA": "South Australia",
+    "TAS": "Tasmania",
+    "VIC": "Victoria",
+    "WA": "Western Australia"
+}
 
-sturls = {"ACT": "https://en.wikipedia.org/wiki/{0}_electorate",
-         "NT": "https://en.wikipedia.org/wiki/Electoral_division_of_{0}",
-         "NSW": stateurl,
-         "QLD": stateurl,
-         "SA": stateurl,
-         "TAS": "https://en.wikipedia.org/wiki/Division_of_{0}_(state)",
-         "VIC": stateurl,
-         "WA": stateurl
-         }
+sturls = {
+    "ACT": "https://en.wikipedia.org/wiki/{0}_electorate",
+    "NT": "https://en.wikipedia.org/wiki/Electoral_division_of_{0}",
+    "NSW": stateurl,
+    "QLD": stateurl,
+    "SA": stateurl,
+    "TAS": "https://en.wikipedia.org/wiki/Division_of_{0}_(state)",
+    "VIC": stateurl,
+    "WA": stateurl
+}
 
 electoratejson = {}
 
 
 class AddressForm(Form):
-    address = StringField('Please enter your address')
+    address = StringField(label='Please enter your address')
 
 
 # Helper functions
@@ -98,15 +100,16 @@ def get_geoJson(addr):
     a float-ified version of the latitude and longitude.
     """
     res = requests.get(queryurl.format(addr=addr, gmapkey=gmapkey))
-    if not res.ok:
-        return {}
-    rresj = res.json()["results"][0]
     dictr = {}
-    dictr["formatted_address"] = rresj["formatted_address"]
-    dictr["latlong"] = rresj["geometry"]["location"]
-    for el in rresj["address_components"]:
-        if el["types"][0] == "administrative_area_level_1":
-            dictr["state"] = el["short_name"]
+    if not res.ok:
+        dictr["res"] = res
+    else:
+        rresj = res.json()["results"][0]
+        dictr["formatted_address"] = rresj["formatted_address"]
+        dictr["latlong"] = rresj["geometry"]["location"]
+        for el in rresj["address_components"]:
+            if el["types"][0] == "administrative_area_level_1":
+                dictr["state"] = el["short_name"]
     return dictr
 
 
@@ -170,6 +173,19 @@ load_kml("FEDERAL")
 @app.route("/results", methods=('POST',))
 def results():
     dictr = get_geoJson(request.form["address"])
+    if "res" in dictr:
+        # Error case - didn't get 200 from the external query
+        print(dir(dictr["res"]))
+        return render_template("not-200.html",
+                               address=request.form["address"],
+                               result=dictr["res"])
+
+    nation = dictr["formatted_address"].split(",")[-1].strip()
+    if nation != "Australia":
+        # Error - not an Australian address
+        return render_template("not-au.html",
+                               address=dictr["formatted_address"])
+
     isSupported = False
     if dictr["state"] in supported:
         load_kml(dictr["state"])
@@ -206,8 +222,7 @@ def results():
                            aecurl=aecurl.format(dictr["state"].lower(),
                                                 feddiv.lower()),
                            sturl=sturls[dictr["state"]].format(
-                               statediv.replace(" ", "_"))
-    )
+                               statediv.replace(" ", "_")))
 
 
 @app.route("/")
