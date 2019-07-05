@@ -62,7 +62,7 @@ stateurl = "https://en.wikipedia.org/wiki/Electoral_district_of_{0}"
 # We don't have support for all the jurisdictions in the country
 # *yet*, so keep a whitelist of those we know about so we can
 # handle out-of-bounds cases politely.
-supported = {"FEDERAL", "QLD", "NSW", "VIC", "TAS"}
+supported = {"FEDERAL", "QLD", "NSW", "VIC", "TAS", "SA"}
 stmap = {
     "ACT": "Australian Capital Territory",
     "NT": "Northern Territory",
