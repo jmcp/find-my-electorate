@@ -1,0 +1,13 @@
+
+TODO
+----
+
+- add tests
+- add support for ACT, NT, WA
+- create deployment infra
+-- docker
+-- k8s
+-- AWS
+-- GCP
+-- Azure
+
