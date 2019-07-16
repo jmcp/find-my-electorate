@@ -140,8 +140,6 @@ def get_image(latlong):
                          lati=latlong["lat"],
                          gmapkey=gmapkey)
     res = requests.get(turl)
-    print("Requesting {turl}".format(turl=turl))
-    print(res)
     return b64encode(res.content)
 
 
