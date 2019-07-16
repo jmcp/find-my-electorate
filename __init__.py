@@ -31,7 +31,12 @@
 import json
 import requests
 
+
+from base64 import b64encode
+
 from flask import Flask, render_template, request
+
+from urllib.parse import quote
 from wtforms import Form, StringField
 
 
@@ -53,8 +58,16 @@ Run this from or with Flask.
 
 
 # Some global definitions
+keyarg = "&key={gmapkey}"
 queryurl = "https://maps.googleapis.com/maps/api/geocode/json?address="
-queryurl += "{addr} Australia&key={gmapkey}"
+queryurl += "{addr} Australia"
+queryurl += keyarg
+
+imgurl = "https://maps.googleapis.com/maps/api/staticmap?size=400x400"
+imgurl += "&center={lati},{longi}&scale=1&maptype=roadmap&zoom=12"
+imgurl += "&markers=X|{lati},{longi}"
+imgurl += keyarg
+
 
 aecurl = "https://www.aec.gov.au/profiles/{0}/{1}.htm"
 stateurl = "https://en.wikipedia.org/wiki/Electoral_district_of_{0}"
@@ -101,7 +114,7 @@ def get_geoJson(addr):
     """
     res = requests.get(queryurl.format(addr=addr, gmapkey=gmapkey))
     dictr = {}
-    if not res.ok:
+    if res.json()["status"] == "ZERO_RESULTS" or not res.ok:
         dictr["res"] = res
     else:
         rresj = res.json()["results"][0]
@@ -111,6 +124,25 @@ def get_geoJson(addr):
             if el["types"][0] == "administrative_area_level_1":
                 dictr["state"] = el["short_name"]
     return dictr
+
+
+# Let's provide a Google Maps static picture of the location
+# Adapted from
+# https://stackoverflow.com/questions/25140826/generate-image-embed-in-flask-with-a-data-uri/25141268#25141268
+#
+def get_image(latlong):
+    """
+    latlong -- a dict of the x and y coodinates of the location
+
+    Returns a base64-encoded image
+    """
+    turl = imgurl.format(longi=latlong["lng"],
+                         lati=latlong["lat"],
+                         gmapkey=gmapkey)
+    res = requests.get(turl)
+    print("Requesting {turl}".format(turl=turl))
+    print(res)
+    return b64encode(res.content)
 
 
 # This is a slightly modified version of the example implementation
@@ -175,10 +207,10 @@ def results():
     dictr = get_geoJson(request.form["address"])
     if "res" in dictr:
         # Error case - didn't get 200 from the external query
-        print(dir(dictr["res"]))
         return render_template("not-200.html",
                                address=request.form["address"],
-                               result=dictr["res"])
+                               result=dictr["res"],
+                               content=dictr["res"].json())
 
     nation = dictr["formatted_address"].split(",")[-1].strip()
     if nation != "Australia":
@@ -199,6 +231,8 @@ def results():
     feddiv = ""
     statediv = ""
 
+    # Grab a small (400x400) static image of the location
+    img_data = get_image(dictr["latlong"])
     # A convenience assignment
     fedj = electoratejson["FEDERAL"]
     for division in reduce_federal(dictr["state"]):
@@ -222,7 +256,8 @@ def results():
                            aecurl=aecurl.format(dictr["state"].lower(),
                                                 feddiv.lower()),
                            sturl=sturls[dictr["state"]].format(
-                               statediv.replace(" ", "_")))
+                               statediv.replace(" ", "_")),
+                           img_data=format(quote(img_data)))
 
 
 @app.route("/")
