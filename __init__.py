@@ -261,8 +261,7 @@ def results():
                            img_data=format(quote(img_data)),
                            linkurl=linkurl.format(
                                addr=dictr["formatted_address"]
-                           ).replace(" ", "+")
-    )
+                           ).replace(" ", "+"))
 
 
 @app.route("/")
