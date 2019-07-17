@@ -64,10 +64,13 @@ queryurl += "{addr} Australia"
 queryurl += keyarg
 
 imgurl = "https://maps.googleapis.com/maps/api/staticmap?size=400x400"
-imgurl += "&center={lati},{longi}&scale=1&maptype=roadmap&zoom=12"
+imgurl += "&center={lati},{longi}&scale=1&maptype=roadmap&zoom=13"
 imgurl += "&markers=X|{lati},{longi}"
 imgurl += keyarg
 
+# The formatted address we get back from the geocoding includes
+# the word Australia so we don't need to append it here.
+linkurl = "https://www.google.com.au/maps/place/{addr}"
 
 aecurl = "https://www.aec.gov.au/profiles/{0}/{1}.htm"
 stateurl = "https://en.wikipedia.org/wiki/Electoral_district_of_{0}"
@@ -255,7 +258,11 @@ def results():
                                                 feddiv.lower()),
                            sturl=sturls[dictr["state"]].format(
                                statediv.replace(" ", "_")),
-                           img_data=format(quote(img_data)))
+                           img_data=format(quote(img_data)),
+                           linkurl=linkurl.format(
+                               addr=dictr["formatted_address"]
+                           ).replace(" ", "+")
+    )
 
 
 @app.route("/")
