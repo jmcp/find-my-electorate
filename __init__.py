@@ -1,7 +1,7 @@
-#!/usr/bin/env python3.7
+#!/usr/bin/env python3.8
 
 #
-# Copyright (c) 2019, James C. McPherson. All Rights Reserved.
+# Copyright (c) 2019, 2020, James C. McPherson. All Rights Reserved.
 #
 
 # Available under the terms of the MIT license:
@@ -35,6 +35,8 @@ import requests
 from base64 import b64encode
 
 from flask import Flask, render_template, request
+
+from os import environ
 
 from urllib.parse import quote
 from wtforms import Form, StringField
@@ -75,10 +77,6 @@ linkurl = "https://www.google.com.au/maps/place/{addr}"
 aecurl = "https://www.aec.gov.au/profiles/{0}/{1}.htm"
 stateurl = "https://en.wikipedia.org/wiki/Electoral_district_of_{0}"
 
-# We don't have support for all the jurisdictions in the country
-# *yet*, so keep a whitelist of those we know about so we can
-# handle out-of-bounds cases politely.
-supported = {"FEDERAL", "QLD", "NSW", "VIC", "TAS", "SA"}
 stmap = {
     "ACT": "Australian Capital Territory",
     "NT": "Northern Territory",
@@ -120,6 +118,7 @@ def get_geoJson(addr):
     if res.json()["status"] == "ZERO_RESULTS" or not res.ok:
         dictr["res"] = res
     else:
+        print(json.dumps(res.json(), indent=4))
         rresj = res.json()["results"][0]
         dictr["formatted_address"] = rresj["formatted_address"]
         dictr["latlong"] = rresj["geometry"]["location"]
@@ -195,8 +194,7 @@ def reduce_federal(state):
 #
 # boilerplate and basic setup
 app = Flask("find-my-electorate")
-app.config.from_pyfile("fmeconfig-prod.cfg")
-gmapkey = app.config["GMAPKEY"]
+gmapkey = environ["GMAPKEY"]
 
 # Set up the federal part, we handle the state part when we have
 # a state to query.
@@ -219,10 +217,11 @@ def results():
         return render_template("not-au.html",
                                address=dictr["formatted_address"])
 
-    isSupported = False
-    if dictr["state"] in supported:
-        load_kml(dictr["state"])
-        isSupported = True
+    # debugging
+    # print(dictr)
+
+    isSupported = True
+    load_kml(dictr["state"])
 
     # Perform the actual check for which federal and state/territory
     # electorate this lat/long is in. Courtesy of Section 29 of the
@@ -241,12 +240,17 @@ def results():
             feddiv = division
             break
 
-    if dictr["state"] in supported:
-        statej = electoratejson[dictr["state"]]
-        for division in statej:
-            if is_point_in_path(dictr["latlong"], statej[division]["coords"]):
-                statediv = division
-                break
+    statej = electoratejson[dictr["state"]]
+    for division in statej:
+        # print("checking against {division}".format(division=division))
+        if is_point_in_path(dictr["latlong"], statej[division]["coords"]):
+            statediv = division
+            break
+    if statediv == "":
+        # print("Unable to find a match for {formattedaddr} in "
+        #       "{statej}".format(
+        #       formattedaddr=dictr["formatted_address"], statej=statej))
+        isSupported = False
 
     return render_template("results.html",
                            address=dictr["formatted_address"],

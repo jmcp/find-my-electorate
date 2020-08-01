@@ -44,6 +44,12 @@ example code for the [Even-Odd Rule][evenoddrule].
 The [Google Maps API Developer Guide][gmapdocs] is very useful too.
 
 
+Federal, State and Territory electoral commission links
+=======================================================
+
+https://www.elections.act.gov.au/electoral_boundaries/which_electorate_am_i_in
+
+
 
 Dependencies:
 -------------
