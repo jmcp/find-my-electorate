@@ -172,7 +172,7 @@ def load_kml(statename):
     """
     Loads a state/territory or federal electorate JSON file
     """
-    fn = __name__ + "/json/{0}.json".format(statename)
+    fn = "/json/{0}.json".format(statename)
     if statename not in electoratejson:
         # Not loaded yet
         with open(fn, "r") as infile:
